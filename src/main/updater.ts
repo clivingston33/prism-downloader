@@ -1,10 +1,15 @@
 import { autoUpdater, UpdateInfo } from "electron-updater";
-import { BrowserWindow } from "electron";
+import { BrowserWindow, app } from "electron";
 
 let mainWindow: BrowserWindow | null = null;
 
 export function setupUpdater() {
   autoUpdater.autoDownload = false;
+
+  // Force dev update config when running from unpacked build (not from installer)
+  if (!app.isPackaged) {
+    autoUpdater.forceDevUpdateConfig = true;
+  }
 
   autoUpdater.on("update-available", (info: UpdateInfo) => {
     if (mainWindow) {

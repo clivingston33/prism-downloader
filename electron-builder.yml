@@ -6,10 +6,7 @@ directories:
 files:
   - out/**/*
   - resources/**/*
-publish:
-  provider: github
-  owner: clivingston33
-  repo: prism
+publish: null
 mac:
   target: dmg
   hardenedRuntime: true

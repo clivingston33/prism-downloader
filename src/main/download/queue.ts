@@ -47,6 +47,13 @@ class DownloadQueue {
       })
       .catch(() => {});
 
+    // Try to start this download immediately if there's capacity
+    const settings = store.get("settings") as any;
+    const max = settings.maxConcurrentDownloads || 2;
+    if (this.activeCount < max) {
+      this.start(id, mainWindow);
+    }
+
     return id;
   }
 

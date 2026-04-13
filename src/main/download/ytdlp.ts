@@ -386,15 +386,31 @@ export async function startDownload(item: any, mainWindow: any) {
     args.push(item.url);
 
     console.log(`[yt-dlp] starting download: ${args.join(" ")}`);
+    console.log(
+      `[yt-dlp] binary path: ${ytdlp}, exists: ${fs.existsSync(ytdlp)}`,
+    );
+    console.log(
+      `[yt-dlp] ffmpeg path: ${ffmpeg}, exists: ${fs.existsSync(ffmpeg)}`,
+    );
     const child = spawn(ytdlp, args);
     activeProcesses.set(item.id, child);
 
     let lastProgress = 0;
     let finalFilePath = "";
     let stderrOutput = "";
+    let hasReportedError = false;
 
     child.stderr.on("data", (data) => {
-      stderrOutput += data.toString();
+      const text = data.toString();
+      stderrOutput += text;
+      // Detect and log yt-dlp errors
+      if (
+        (!hasReportedError && text.includes("[error]")) ||
+        text.includes("ERROR")
+      ) {
+        console.log(`[yt-dlp] error output: ${text.slice(0, 300)}`);
+        hasReportedError = true;
+      }
     });
 
     child.stdout.on("data", (data) => {
@@ -403,7 +419,9 @@ export async function startDownload(item: any, mainWindow: any) {
       const lines = output.split("\n");
       for (const line of lines) {
         const trimmed = line.trim();
-        if (trimmed && path.isAbsolute(trimmed) && fs.existsSync(trimmed)) {
+        // Check for absolute paths (yt-dlp outputs the final path after --print after_move:filepath)
+        if (trimmed && path.isAbsolute(trimmed)) {
+          // Verify file exists or is a valid path (don't require exists check since file may still be downloading)
           finalFilePath = trimmed;
         }
       }

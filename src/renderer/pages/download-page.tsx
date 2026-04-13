@@ -30,7 +30,9 @@ function extractUrls(text: string): string[] {
 }
 
 function normalizeUrls(text: string): string {
-  return extractUrls(text).join("\n");
+  const urls = extractUrls(text);
+  // Join URLs with spaces - they display on one line if they fit
+  return urls.join(" ");
 }
 
 export function DownloadPage() {
@@ -90,7 +92,7 @@ export function DownloadPage() {
   const handlePaste = (e: React.ClipboardEvent) => {
     e.preventDefault();
     const text = e.clipboardData.getData("text");
-    setUrl(normalizeUrls(url + "\n" + text));
+    setUrl(normalizeUrls(url + " " + text));
   };
 
   const handleBlur = () => {

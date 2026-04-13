@@ -71,11 +71,16 @@ interface DownloadError {
 }
 
 interface PrismAPI {
+  version: string;
   settings: {
     get(): Promise<Settings>;
     update(settings: Partial<Settings>): Promise<Settings>;
     selectDirectory(): Promise<string | null>;
-    checkForUpdates(): Promise<any>;
+    checkForUpdates(): Promise<{
+      version: string;
+      releaseDate?: string;
+    } | null>;
+    downloadUpdate?(): void;
   };
   history: {
     get(): Promise<DownloadItem[]>;

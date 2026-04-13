@@ -29,10 +29,25 @@ export function setupSettingsIPC() {
   ipcMain.handle("settings:checkForUpdates", async () => {
     try {
       const result = await autoUpdater.checkForUpdates();
-      return result?.updateInfo ?? null;
+      if (result?.updateInfo?.version) {
+        return {
+          version: result.updateInfo.version,
+          releaseDate: result.updateInfo.releaseDate,
+          releaseNotes: result.updateInfo.releaseNotes,
+        };
+      }
+      return null;
     } catch (err) {
       console.error("Update check failed:", err);
       return null;
+    }
+  });
+
+  ipcMain.handle("settings:downloadUpdate", async () => {
+    try {
+      autoUpdater.downloadUpdate();
+    } catch (err) {
+      console.error("Update download failed:", err);
     }
   });
 }

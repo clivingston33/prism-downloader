@@ -78,7 +78,7 @@ export function Shell() {
           className={`px-3 pb-3 transition-opacity duration-200 ${sidebarExpanded ? "opacity-100" : "opacity-0 overflow-hidden"}`}
         >
           <span className="font-mono text-[9px] text-text-tertiary">
-            v1.0.0
+            v{window.prism.version}
           </span>
         </div>
       </aside>

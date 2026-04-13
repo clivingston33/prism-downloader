@@ -4,7 +4,7 @@ import { electronApp, optimizer, is } from "@electron-toolkit/utils";
 import { setupSettingsIPC } from "./ipc/settings";
 import { setupHistoryIPC } from "./ipc/history";
 import { setupDownloadIPC } from "./ipc/download";
-import { setupUpdater } from "./updater";
+import { setupUpdater, setUpdaterMainWindow } from "./updater";
 
 function createWindow(): void {
   const mainWindow = new BrowserWindow({
@@ -32,6 +32,8 @@ function createWindow(): void {
       webSecurity: false,
     },
   });
+
+  setUpdaterMainWindow(mainWindow);
 
   mainWindow.on("ready-to-show", () => {
     mainWindow.show();

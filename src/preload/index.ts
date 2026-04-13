@@ -12,11 +12,13 @@ interface DownloadOptions {
 
 // Custom APIs for renderer
 const prismAPI = {
+  version: "1.0.1",
   settings: {
     get: () => ipcRenderer.invoke("settings:get"),
     update: (settings: any) => ipcRenderer.invoke("settings:update", settings),
     selectDirectory: () => ipcRenderer.invoke("settings:selectDirectory"),
     checkForUpdates: () => ipcRenderer.invoke("settings:checkForUpdates"),
+    downloadUpdate: () => ipcRenderer.invoke("settings:downloadUpdate"),
   },
   history: {
     get: () => ipcRenderer.invoke("history:get"),

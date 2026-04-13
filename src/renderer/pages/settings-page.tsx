@@ -1,20 +1,31 @@
 import { useState } from "react";
 import { useAppStore } from "../stores/app-store";
+import { UpdateCard, UpToDateCard } from "../components/update-card";
 
 export function SettingsPage() {
   const { settings, setSettings } = useAppStore();
   const [checkingUpdates, setCheckingUpdates] = useState(false);
+  const [updateAvailable, setUpdateAvailable] = useState<string | null>(null);
+  const [showUpToDate, setShowUpToDate] = useState(false);
+  const [downloadingUpdate, setDownloadingUpdate] = useState(false);
 
   const handleCheckUpdates = async () => {
     setCheckingUpdates(true);
     try {
       const result = await window.prism.settings.checkForUpdates();
-      if (!result) {
-        alert("You are running the latest version.");
+      if (result?.version) {
+        setUpdateAvailable(result.version);
+      } else {
+        setShowUpToDate(true);
       }
     } finally {
       setCheckingUpdates(false);
     }
+  };
+
+  const handleDownloadUpdate = () => {
+    setDownloadingUpdate(true);
+    window.prism.settings.downloadUpdate?.();
   };
 
   if (!settings) return null;
@@ -213,6 +224,17 @@ export function SettingsPage() {
           </section>
         </div>
       </div>
+
+      {updateAvailable && (
+        <UpdateCard
+          version={updateAvailable}
+          onDownload={handleDownloadUpdate}
+          onClose={() => setUpdateAvailable(null)}
+          isDownloading={downloadingUpdate}
+        />
+      )}
+
+      {showUpToDate && <UpToDateCard onClose={() => setShowUpToDate(false)} />}
     </div>
   );
 }

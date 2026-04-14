@@ -1,22 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useAppStore } from "../stores/app-store";
-import { UpdateCard, UpToDateCard } from "../components/update-card";
+import { UpToDateCard } from "../components/update-card";
+import { RefreshCw, ExternalLink } from "lucide-react";
 
 export function SettingsPage() {
   const { settings, setSettings } = useAppStore();
   const [checkingUpdates, setCheckingUpdates] = useState(false);
   const [updateAvailable, setUpdateAvailable] = useState<string | null>(null);
   const [showUpToDate, setShowUpToDate] = useState(false);
-  const [downloadingUpdate, setDownloadingUpdate] = useState(false);
-  const [isUpdateDownloaded, setIsUpdateDownloaded] = useState(false);
-
-  useEffect(() => {
-    const unsubscribe = window.prism.on("update:downloaded", () => {
-      setIsUpdateDownloaded(true);
-      setDownloadingUpdate(false);
-    });
-    return unsubscribe;
-  }, []);
 
   const handleCheckUpdates = async () => {
     setCheckingUpdates(true);
@@ -35,13 +26,12 @@ export function SettingsPage() {
     }
   };
 
-  const handleDownloadUpdate = () => {
-    setDownloadingUpdate(true);
-    window.prism.settings.downloadUpdate?.();
-  };
-
-  const handleInstallUpdate = () => {
-    window.prism.settings.quitAndInstall?.();
+  const handleViewRelease = () => {
+    window.open(
+      "https://github.com/clivingston33/prism/releases/latest",
+      "_blank",
+    );
+    setUpdateAvailable(null);
   };
 
   if (!settings) return null;
@@ -242,14 +232,39 @@ export function SettingsPage() {
       </div>
 
       {updateAvailable && (
-        <UpdateCard
-          version={updateAvailable}
-          onDownload={handleDownloadUpdate}
-          onClose={() => setUpdateAvailable(null)}
-          onInstall={handleInstallUpdate}
-          isDownloading={downloadingUpdate}
-          isDownloaded={isUpdateDownloaded}
-        />
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm animate-in fade-in duration-150">
+          <div className="w-[380px] rounded-lg border border-border bg-bg-elevated p-6 shadow-2xl animate-in zoom-in-95 duration-150">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/10 text-accent">
+                <RefreshCw size={20} strokeWidth={1.5} />
+              </div>
+              <div>
+                <h3 className="text-sm font-semibold text-text-primary">
+                  Update available
+                </h3>
+                <p className="text-xs text-text-secondary mt-0.5">
+                  Prism v{updateAvailable} is available
+                </p>
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-3 mt-6">
+              <button
+                onClick={() => setUpdateAvailable(null)}
+                className="px-4 py-2 text-xs font-medium text-text-primary bg-bg border border-border hover:bg-bg-subtle rounded transition-colors"
+              >
+                Later
+              </button>
+              <button
+                onClick={handleViewRelease}
+                className="px-4 py-2 text-xs font-medium bg-accent text-accent-fg hover:bg-accent/90 rounded transition-colors flex items-center gap-2"
+              >
+                <ExternalLink size={12} />
+                View Release
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {showUpToDate && <UpToDateCard onClose={() => setShowUpToDate(false)} />}

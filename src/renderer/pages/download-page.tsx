@@ -111,8 +111,8 @@ export function DownloadPage() {
         </div>
 
         <div className="w-full flex flex-col gap-2">
-          <div className="w-full bg-bg-subtle rounded-xl border border-border flex flex-col shadow-sm">
-            <div className="relative w-full flex items-center">
+          <div className="w-full bg-bg-subtle rounded-xl border border-border shadow-sm overflow-hidden">
+            <div className="relative flex items-center min-h-[32px] max-h-[192px]">
               <textarea
                 ref={textareaRef}
                 value={url}
@@ -121,16 +121,26 @@ export function DownloadPage() {
                 onPaste={handlePaste}
                 onBlur={handleBlur}
                 placeholder="Paste link..."
-                className="w-full bg-transparent border-none pl-6 pr-14 py-3 text-sm text-text-primary placeholder-text-tertiary outline-none resize-none text-center"
+                className="w-full bg-transparent border-none pl-6 pr-14 py-2 text-sm text-text-primary placeholder-text-tertiary outline-none resize-none overflow-y-auto"
+                rows={1}
                 style={{
-                  height: url
-                    ? `${Math.min(Math.max(url.split("\n").length * 24, 48), 120)}px`
-                    : "48px",
+                  height: "auto",
+                  minHeight: "32px",
+                  maxHeight: "192px",
+                }}
+                onInput={(e) => {
+                  const target = e.target as HTMLTextAreaElement;
+                  target.style.height = "auto";
+                  const newHeight = Math.min(
+                    Math.max(target.scrollHeight, 32),
+                    192,
+                  );
+                  target.style.height = `${newHeight}px`;
                 }}
               />
               <button
                 onClick={handleIconClick}
-                className="absolute right-3 top-3 p-2 text-text-tertiary hover:text-text-primary transition-colors rounded-xl"
+                className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-text-tertiary hover:text-text-primary transition-colors rounded-xl"
               >
                 {url ? (
                   <X size={20} strokeWidth={1.5} />

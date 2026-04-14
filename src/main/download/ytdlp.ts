@@ -24,11 +24,7 @@ function getBinPaths() {
 }
 
 function getJsRuntimeArg(): string | null {
-  const { deno } = getBinPaths();
-  if (fs.existsSync(deno)) {
-    return `--js-runtimes=deno:${deno}`;
-  }
-  return "--js-runtimes=nodejs";
+  return null; // Disable JS runtime arg to avoid warnings
 }
 
 export async function getMetadata(url: string): Promise<any> {

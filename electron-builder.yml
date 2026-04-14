@@ -32,3 +32,4 @@ win:
 nsis:
   oneClick: false
   allowToChangeInstallationDirectory: true
+  deleteAppDataOnUninstall: true

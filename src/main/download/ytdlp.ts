@@ -408,23 +408,17 @@ export async function startDownload(item: any, mainWindow: any) {
         (!hasReportedError && text.includes("[error]")) ||
         text.includes("ERROR")
       ) {
-        console.log(`[yt-dlp] error output: ${text.slice(0, 300)}`);
+        console.log(`[yt-dlp] error output: ${text.slice(0, 500)}`);
         hasReportedError = true;
+      }
+      // Also log any warning messages
+      if (text.includes("[warning]") || text.includes("WARNING")) {
+        console.log(`[yt-dlp] warning: ${text.slice(0, 300)}`);
       }
     });
 
     child.stdout.on("data", (data) => {
       const output = data.toString();
-
-      const lines = output.split("\n");
-      for (const line of lines) {
-        const trimmed = line.trim();
-        // Check for absolute paths (yt-dlp outputs the final path after --print after_move:filepath)
-        if (trimmed && path.isAbsolute(trimmed)) {
-          // Verify file exists or is a valid path (don't require exists check since file may still be downloading)
-          finalFilePath = trimmed;
-        }
-      }
 
       // Look for download progress
       const progressMatch = output.match(/\[download\]\s+([\d.]+)%/);

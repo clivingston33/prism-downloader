@@ -19,6 +19,7 @@ const prismAPI = {
     selectDirectory: () => ipcRenderer.invoke("settings:selectDirectory"),
     checkForUpdates: () => ipcRenderer.invoke("settings:checkForUpdates"),
     downloadUpdate: () => ipcRenderer.invoke("settings:downloadUpdate"),
+    quitAndInstall: () => ipcRenderer.invoke("settings:quitAndInstall"),
   },
   history: {
     get: () => ipcRenderer.invoke("history:get"),

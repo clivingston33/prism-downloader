@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAppStore } from "../stores/app-store";
 import { UpdateCard, UpToDateCard } from "../components/update-card";
 
@@ -8,6 +8,15 @@ export function SettingsPage() {
   const [updateAvailable, setUpdateAvailable] = useState<string | null>(null);
   const [showUpToDate, setShowUpToDate] = useState(false);
   const [downloadingUpdate, setDownloadingUpdate] = useState(false);
+  const [isUpdateDownloaded, setIsUpdateDownloaded] = useState(false);
+
+  useEffect(() => {
+    const unsubscribe = window.prism.on("update:downloaded", () => {
+      setIsUpdateDownloaded(true);
+      setDownloadingUpdate(false);
+    });
+    return unsubscribe;
+  }, []);
 
   const handleCheckUpdates = async () => {
     setCheckingUpdates(true);
@@ -15,12 +24,10 @@ export function SettingsPage() {
       const result = await window.prism.settings.checkForUpdates();
       console.log("[settings] checkForUpdates result:", JSON.stringify(result));
       if (result?.isUpdateAvailable === false) {
-        // No update available - show up to date card
         setShowUpToDate(true);
       } else if (result?.version) {
         setUpdateAvailable(result.version);
       } else {
-        // Unexpected result - treat as no update
         setShowUpToDate(true);
       }
     } finally {
@@ -31,6 +38,10 @@ export function SettingsPage() {
   const handleDownloadUpdate = () => {
     setDownloadingUpdate(true);
     window.prism.settings.downloadUpdate?.();
+  };
+
+  const handleInstallUpdate = () => {
+    window.prism.settings.quitAndInstall?.();
   };
 
   if (!settings) return null;
@@ -235,7 +246,9 @@ export function SettingsPage() {
           version={updateAvailable}
           onDownload={handleDownloadUpdate}
           onClose={() => setUpdateAvailable(null)}
+          onInstall={handleInstallUpdate}
           isDownloading={downloadingUpdate}
+          isDownloaded={isUpdateDownloaded}
         />
       )}
 

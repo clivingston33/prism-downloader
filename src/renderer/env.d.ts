@@ -82,6 +82,7 @@ interface PrismAPI {
       releaseDate?: string;
     } | null>;
     downloadUpdate?(): void;
+    quitAndInstall?(): void;
   };
   history: {
     get(): Promise<DownloadItem[]>;
@@ -110,6 +111,15 @@ interface PrismAPI {
   ): () => void;
   on(event: "download:error", cb: (data: DownloadError) => void): () => void;
   on(event: "history:update", cb: (data: DownloadItem[]) => void): () => void;
+  on(
+    event: "update:available",
+    cb: (data: { version: string }) => void,
+  ): () => void;
+  on(
+    event: "update:downloaded",
+    cb: (data: { version: string }) => void,
+  ): () => void;
+  on(event: string, cb: (...args: any[]) => void): () => void;
 }
 
 interface Window {

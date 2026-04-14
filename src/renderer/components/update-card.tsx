@@ -4,14 +4,18 @@ interface UpdateCardProps {
   version: string;
   onDownload: () => void;
   onClose: () => void;
+  onInstall: () => void;
   isDownloading?: boolean;
+  isDownloaded?: boolean;
 }
 
 export function UpdateCard({
   version,
   onDownload,
   onClose,
+  onInstall,
   isDownloading,
+  isDownloaded,
 }: UpdateCardProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm animate-in fade-in duration-150">
@@ -44,23 +48,33 @@ export function UpdateCard({
           >
             Later
           </button>
-          <button
-            onClick={onDownload}
-            disabled={isDownloading}
-            className="px-4 py-2 text-xs font-medium text-white bg-accent hover:bg-accent/90 disabled:opacity-50 rounded transition-colors flex items-center gap-2"
-          >
-            {isDownloading ? (
-              <>
-                <RefreshCw size={12} className="animate-spin" />
-                Downloading...
-              </>
-            ) : (
-              <>
-                <Download size={12} />
-                Download & Install
-              </>
-            )}
-          </button>
+          {isDownloaded ? (
+            <button
+              onClick={onInstall}
+              className="px-4 py-2 text-xs font-medium bg-accent text-accent-fg hover:bg-accent/90 rounded transition-colors flex items-center gap-2"
+            >
+              <Download size={12} />
+              Install & Restart
+            </button>
+          ) : (
+            <button
+              onClick={onDownload}
+              disabled={isDownloading}
+              className="px-4 py-2 text-xs font-medium bg-accent text-accent-fg hover:bg-accent/90 disabled:opacity-50 rounded transition-colors flex items-center gap-2"
+            >
+              {isDownloading ? (
+                <>
+                  <RefreshCw size={12} className="animate-spin" />
+                  Downloading...
+                </>
+              ) : (
+                <>
+                  <Download size={12} />
+                  Download & Install
+                </>
+              )}
+            </button>
+          )}
         </div>
       </div>
     </div>

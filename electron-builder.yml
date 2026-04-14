@@ -28,6 +28,7 @@ mac:
   gatekeeperAssess: false
 win:
   target: nsis
+  sign: false
 nsis:
   oneClick: false
   allowToChangeInstallationDirectory: true

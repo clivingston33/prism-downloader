@@ -30,8 +30,7 @@ function extractUrls(text: string): string[] {
 }
 
 function normalizeUrls(text: string): string {
-  const urls = extractUrls(text);
-  return urls.join("\n");
+  return extractUrls(text).join("\n");
 }
 
 export function DownloadPage() {
@@ -59,7 +58,7 @@ export function DownloadPage() {
             quality: mode === "video" ? "best" : undefined,
           });
         } catch (e) {
-          console.error("Bulk download failed for", u, e);
+          console.error("Download failed for", u, e);
         }
       }
       setUrl("");
@@ -91,12 +90,15 @@ export function DownloadPage() {
   const handlePaste = (e: React.ClipboardEvent) => {
     e.preventDefault();
     const text = e.clipboardData.getData("text");
-    setUrl(normalizeUrls(url + " " + text));
+    setUrl(normalizeUrls(url + "\n" + text));
   };
 
   const handleBlur = () => {
     setUrl(normalizeUrls(url));
   };
+
+  const lineCount = url ? url.split("\n").length : 0;
+  const textareaHeight = Math.min(Math.max(lineCount * 22 + 24, 48), 168);
 
   return (
     <div className="flex h-full w-full flex-col items-center justify-center p-4">
@@ -112,7 +114,7 @@ export function DownloadPage() {
 
         <div className="w-full flex flex-col gap-2">
           <div className="w-full bg-bg-subtle rounded-xl border border-border shadow-sm">
-            <div className="relative flex items-center">
+            <div className="relative" style={{ height: textareaHeight }}>
               <textarea
                 ref={textareaRef}
                 value={url}
@@ -121,25 +123,9 @@ export function DownloadPage() {
                 onPaste={handlePaste}
                 onBlur={handleBlur}
                 placeholder="Paste link..."
-                className="w-full bg-transparent border-none pl-6 pr-14 py-3 text-sm leading-[22px] text-text-primary placeholder-text-tertiary outline-none resize-none"
                 rows={1}
-                style={{
-                  height: "44px",
-                  minHeight: "44px",
-                  maxHeight: "132px",
-                  overflowY:
-                    url && url.split("\n").length > 3 ? "auto" : "hidden",
-                }}
-                onInput={(e) => {
-                  const target = e.target as HTMLTextAreaElement;
-                  target.style.height = "44px";
-                  const newHeight = Math.min(
-                    Math.max(target.scrollHeight, 44),
-                    132,
-                  );
-                  target.style.height = `${newHeight}px`;
-                  target.style.overflowY = newHeight >= 132 ? "auto" : "hidden";
-                }}
+                className="w-full h-full bg-transparent border-none pl-6 pr-14 py-3 text-sm leading-[22px] text-text-primary placeholder-text-tertiary outline-none resize-none overflow-hidden"
+                style={{ height: textareaHeight }}
               />
               <button
                 onClick={handleIconClick}
@@ -159,7 +145,7 @@ export function DownloadPage() {
             disabled={!url || isSubmitting}
             className="w-full h-11 flex items-center justify-center rounded-xl bg-accent text-accent-fg font-medium text-sm transition-all disabled:opacity-30 hover:opacity-90 shadow-sm"
           >
-            {isSubmitting ? "Queuing..." : "Add to Queue"}
+            {isSubmitting ? "Starting downloads..." : "Download"}
           </button>
         </div>
       </div>

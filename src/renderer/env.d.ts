@@ -17,14 +17,7 @@ interface DownloadItem {
   title: string;
   format: string;
   quality?: string;
-  status:
-    | "queued"
-    | "parsing"
-    | "downloading"
-    | "merging"
-    | "completed"
-    | "failed"
-    | "paused";
+  status: "pending" | "downloading" | "processing" | "completed" | "failed";
   progress: number;
   createdAt: string;
   completedAt?: string;

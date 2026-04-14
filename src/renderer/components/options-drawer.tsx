@@ -284,7 +284,7 @@ export function OptionsDrawer({
                 Preparing download...
               </>
             ) : (
-              "Add to queue"
+              "Start Download"
             )}
           </button>
         </div>

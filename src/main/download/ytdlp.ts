@@ -317,8 +317,8 @@ export async function startDownload(item: any, mainWindow: any) {
     const settings = store.get("settings") as any;
     const dest = settings.downloadLocation || app.getPath("downloads");
 
-    // Output template to avoid weird chars but keep title
-    const outTemplate = path.join(dest, `%(title)s [%(id)s].%(ext)s`);
+    // Output template - avoid special chars that shell might interpret
+    const outTemplate = path.join(dest, `%(title)s.%(ext)s`);
 
     const args = [
       "--newline",
@@ -412,12 +412,14 @@ export async function startDownload(item: any, mainWindow: any) {
     child.stderr.on("data", (data) => {
       const text = data.toString();
       stderrOutput += text;
+      // Log all stderr output for debugging
+      console.log(`[yt-dlp] stderr: ${text.slice(0, 300)}`);
       // Detect and log yt-dlp errors
       if (
         (!hasReportedError && text.includes("[error]")) ||
         text.includes("ERROR")
       ) {
-        console.log(`[yt-dlp] error output: ${text.slice(0, 500)}`);
+        console.log(`[yt-dlp] ERROR detected: ${text.slice(0, 500)}`);
         hasReportedError = true;
       }
       // Also log any warning messages
